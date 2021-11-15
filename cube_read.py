@@ -12,6 +12,15 @@ import time
 
 log = logging.getLogger(__name__)
 
+prominent_color_palette = {
+    'r': [[250, 40, 40], [255, 75, 110]],
+    'o': [[235, 110, 50], [255, 145, 80]],
+    'g': [[0, 140, 0], [30, 235, 170]],
+    'w': [[235, 235, 235], [255, 255, 255]],
+    'b': [[0, 35, 175], [0, 60, 255]],
+    'y': [[240, 210, 30], [255, 255, 90]],
+}
+
 
 class CubeNotFound(Exception):
     pass
@@ -1802,7 +1811,7 @@ class RubiksVideo(RubiksOpenCV):
             if con.width:
                 cv2.circle(
                     self.image, (con.cX, con.cY), int(
-                        con.width / 2), (0,0,0), 2
+                        con.width / 2), (0, 0, 0), 2
                 )
 
     def draw_cube_face(self, start_x, start_y, side_data, desc):
@@ -2027,7 +2036,7 @@ class RubiksVideo(RubiksOpenCV):
                     self.D_data = deepcopy(self.data)
                     self.name = "F"
                     self.index = 2
-                    
+
                 self.video_reset(False)
                 self.save_colors = False
 
@@ -2039,7 +2048,7 @@ class RubiksVideo(RubiksOpenCV):
                     (10, 20),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.5,
-                    (0,0,0),
+                    (0, 0, 0),
                     1,
                 )
 
@@ -2047,14 +2056,42 @@ class RubiksVideo(RubiksOpenCV):
 
             if not self.process_keyboard_input():
                 break
-            
+
             if self.count == 7:
-                return self.total_data
+                return self.color_mat(self.total_data)
 
         capture.release()
         cv2.destroyWindow("Fig")
-        
-        
+
+    def color_mat(self, total_data):
+        mat_col = {}
+        for i in total_data:
+            output_color = total_data[i]
+            r = prominent_color_palette['r']
+            g = prominent_color_palette['g']
+            y = prominent_color_palette['y']
+            o = prominent_color_palette['o']
+            w = prominent_color_palette['w']
+            b = prominent_color_palette['b']
+            
+            print(output_color)
+
+            if (r[0][0] <= output_color[0] <= r[1][0]) and (r[0][1] <= output_color[1] <= r[1][1]) and (r[0][2] <= output_color[2] <= r[1][2]):
+                mat_col[i] = 'r'
+            elif (g[0][0] <= output_color[0] <= g[1][0]) and (g[0][1] <= output_color[1] <= g[1][1]) and (g[0][2] <= output_color[2] <= g[1][2]):
+                mat_col[i] = 'g'
+            elif (y[0][0] <= output_color[0] <= y[1][0]) and (y[0][1] <= output_color[1] <= y[1][1]) and (y[0][2] <= output_color[2] <= y[1][2]):
+                mat_col[i] = 'y'
+            elif (o[0][0] <= output_color[0] <= o[1][0]) and (o[0][1] <= output_color[1] <= o[1][1]) and (o[0][2] <= output_color[2] <= o[1][2]):
+                mat_col[i] = 'o'
+            elif (w[0][0] <= output_color[0] <= w[1][0]) and (w[0][1] <= output_color[1] <= w[1][1]) and (w[0][2] <= output_color[2] <= w[1][2]):
+                mat_col[i] = 'w'
+            elif (b[0][0] <= output_color[0] <= b[1][0]) and (b[0][1] <= output_color[1] <= b[1][1]) and (b[0][2] <= output_color[2] <= b[1][2]):
+                mat_col[i] = 'b'
+            else:
+                mat_col[i] = '@'
+
+        return mat_col
 
 
 if __name__ == '__main__':
